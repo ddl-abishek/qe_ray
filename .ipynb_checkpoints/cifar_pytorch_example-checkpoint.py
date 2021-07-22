@@ -18,17 +18,6 @@ from ray.util.sgd.utils import BATCH_SIZE, override
 
 def initialization_hook():
     # Need this for avoiding a connection restart issue on AWS.
-<<<<<<< HEAD
-    #os.environ["NCCL_SOCKET_IFNAME"] = "^docker0,lo"
-    #os.environ["NCCL_SOCKET_IFNAME"] = "eth0"
-    #os.environ["NCCL_LL_THRESHOLD"] = "0"
-    #os.environ["NCCL_IB_DISABLE"]  = "1"
-
-    # set the below if needed
-    print("NCCL DEBUG SET")
-    os.environ["NCCL_DEBUG"] = "INFO"
-    #os.environ["NCCL_DEBUG_SUBSYS"] = "ALL"
-=======
     os.environ["NCCL_SOCKET_IFNAME"] = "^docker0,lo"
     os.environ["NCCL_LL_THRESHOLD"] = "0"
 
@@ -36,7 +25,6 @@ def initialization_hook():
     # print("NCCL DEBUG SET")
     # os.environ["NCCL_DEBUG"] = "INFO"
 
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
 
 class CifarTrainingOperator(TrainingOperator):
     @override(TrainingOperator)
@@ -64,24 +52,14 @@ class CifarTrainingOperator(TrainingOperator):
             transforms.Normalize((0.4914, 0.4822, 0.4465),
                                  (0.2023, 0.1994, 0.2010)),
         ])
-<<<<<<< HEAD
-        with FileLock("/tmp/.ray.lock"):
-            train_dataset = CIFAR10(
-                root="/tmp/data",
-=======
         with FileLock(".ray.lock"):
             train_dataset = CIFAR10(
                 root="~/data",
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
                 train=True,
                 download=True,
                 transform=transform_train)
             validation_dataset = CIFAR10(
-<<<<<<< HEAD
-                root="/tmp/data",
-=======
                 root="~/data",
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
                 train=False,
                 download=False,
                 transform=transform_test)
@@ -110,8 +88,6 @@ class CifarTrainingOperator(TrainingOperator):
             train_loader=train_loader, validation_loader=validation_loader)
 
 
-<<<<<<< HEAD
-=======
 def train_cifar(test_mode=False,
                 num_workers=1,
                 use_gpu=False,
@@ -146,7 +122,6 @@ def train_cifar(test_mode=False,
     print("success!")
 
 
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -155,12 +130,6 @@ if __name__ == "__main__":
         type=str,
         help="the address to use for connecting to the Ray cluster")
     parser.add_argument(
-<<<<<<< HEAD
-        "--num-workers",
-        "-n",
-        type=int,
-        default=4,
-=======
         "--server-address",
         type=str,
         default=None,
@@ -172,7 +141,6 @@ if __name__ == "__main__":
         "-n",
         type=int,
         default=1,
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
         help="Sets number of workers for training.")
     parser.add_argument(
         "--num-epochs", type=int, default=5, help="Number of epochs to train.")
@@ -195,46 +163,11 @@ if __name__ == "__main__":
         "--tune", action="store_true", default=False, help="Tune training")
 
     args, _ = parser.parse_known_args()
-<<<<<<< HEAD
-    num_cpus = 4 if args.smoke_test else None
-    
-=======
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
     if ray.is_initialized() == False:
         print("Connecting to Ray cluster...")
         service_host = os.environ["RAY_HEAD_SERVICE_HOST"]
         service_port = os.environ["RAY_HEAD_SERVICE_PORT"]
         ray.util.connect(f"{service_host}:{service_port}")
-<<<<<<< HEAD
-
-    trainer1 = TorchTrainer(
-        training_operator_cls=CifarTrainingOperator,
-        initialization_hook=initialization_hook,
-        num_workers=args.num_workers,
-        config={
-            "lr": 0.1,
-            "test_mode": args.smoke_test,  # subset the data
-            # this will be split across workers.
-            BATCH_SIZE: 128 * args.num_workers
-        },
-        use_gpu=args.use_gpu,
-        scheduler_step_freq="epoch",
-        use_fp16=args.fp16,
-        use_tqdm=False)
-    pbar = trange(args.num_epochs, unit="epoch")
-    for i in pbar:
-        info = {"num_steps": 1} if args.smoke_test else {}
-        info["epoch_idx"] = i
-        info["num_epochs"] = args.num_epochs
-        # Increase `max_retries` to turn on fault tolerance.
-        trainer1.train(max_retries=1, info=info)
-        val_stats = trainer1.validate()
-        pbar.set_postfix(dict(acc=val_stats["val_accuracy"]))
-
-    print(trainer1.validate())
-    trainer1.shutdown()
-    print("success!")
-=======
     breakpoint()
         
 #     if args.server_address:
@@ -249,4 +182,3 @@ if __name__ == "__main__":
         use_gpu=args.use_gpu,
         num_epochs=args.num_epochs,
         fp16=args.fp16)
->>>>>>> 71c3da56310ac72b04549c6367e0f3421850143c
